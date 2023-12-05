@@ -89,5 +89,3 @@ class TestLoginSanity:
         textarea_test.send_keys( next_text_test )
 
         driver.quit()
-
-#test
