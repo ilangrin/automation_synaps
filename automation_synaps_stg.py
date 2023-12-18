@@ -20,7 +20,7 @@ class TestLoginSanity:
     def setup(self):
         """Set up the Selenium WebDriver."""
         driver = webdriver.Chrome()
-        driver.get('https://synaps-dev.herokuapp.com/Signin')
+        driver.get('https://synaps-stg-aab67ad5805a.herokuapp.com/Signin')
         driver.maximize_window()
         driver.implicitly_wait(10)
         yield driver
@@ -35,9 +35,6 @@ class TestLoginSanity:
     def test_login_sanity_test(self, setup):
         """Run the login sanity test."""
         driver = setup
-
-        # Set up actions and wait helpers
-        actions = ActionChains(driver)
         wait = WebDriverWait(driver, 10)
 
         # Login process
@@ -52,12 +49,17 @@ class TestLoginSanity:
 
     def perform_login(self, driver, wait):
         """Perform login process."""
-        # ... (Login steps here)
+        driver.find_element(By.XPATH, '//*[@id="mobile-modal"]/div/div[2]/div[2]/div[1]/div/button').click()
+        time.sleep(2)
+        # ... (rest of login steps)
 
     def add_brainwrite_idea(self, driver, wait):
         """Add a brainwrite idea."""
-        # ... (Add brainwrite idea steps here)
+        # Click the button to add a new brainwrite idea
+        # ... (rest of the steps to add a brainwrite idea)
 
     def interact_with_test_area(self, driver):
         """Interact with the test area."""
-        # ... (Interact with test area steps here)
+        # Steps to interact with the test area
+        # ... (rest of the steps to interact with the test area)
+
