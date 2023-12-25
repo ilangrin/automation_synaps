@@ -10,11 +10,30 @@ import pytest
 
 
 class TestLoginSanity:
-    texts = {
-        "brainwrite": ["Test 1", "Test 2", "Test 3", "Test 4", "Test 5"],
-        "brainwrite_test": ["brainwrite_test 1", "brainwrite_test 2", "brainwrite_test 3", "brainwrite_test 4",
-                            "brainwrite_test 5"]}
-    current_index = 0
+
+    counter1, counter2, name_index = 1, 1, 0
+    name_list = ["brain_write", "bad_idea", "melioration", "perspective", "hobbies", "biomimicry", "sit_minus", "trends"]
+
+    def get_next_name():
+        global counter1, counter2, name_index
+
+        # יצירת השם הבא
+        name = f"{test}_{name_list[name_index]}_{counter1}_{counter2}"
+
+        # עדכון המונים
+        counter2 += 1
+        if counter2 > 5:
+            counter2 = 1
+            counter1 += 1
+            if counter1 > 5:
+                counter1 = 1
+                name_index += 1
+                if name_index >= len( name_list ):
+                    name_index = 0
+
+        return name
+
+
 
     @pytest.fixture()
     def setup(self):
