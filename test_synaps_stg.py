@@ -6,6 +6,8 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoAlertPresentException
 from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.chrome.options import Options
+
 import time
 import pytest
 
@@ -51,12 +53,14 @@ class TestLoginSanity:
 
     @pytest.fixture()
     def setup(self):
-        driver = webdriver.Chrome()
-        driver.get( 'https://synaps-stg-aab67ad5805a.herokuapp.com/Signin' )
+        chrome_options = Options()
+        chrome_options.add_argument("--auto-open-devtools-for-tabs")  # This argument opens DevTools.
+        driver = webdriver.Chrome(options=chrome_options)
+        driver.get('https://synaps-stg-aab67ad5805a.herokuapp.com/Signin')
         driver.maximize_window()
-        driver.implicitly_wait( 10 )
+        driver.implicitly_wait(10)
         yield driver
-        driver.close()
+      #driver.close()
 
     def test_login_sanity_test(self, setup):
         driver = setup
@@ -116,4 +120,4 @@ class TestLoginSanity:
 
         time.sleep( 10 )
 
-        driver.quit()
+        #driver.quit()
