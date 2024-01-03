@@ -1,30 +1,32 @@
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import Select
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import NoAlertPresentException
-from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.chrome.options import Options
-
 import time
+
 import pytest
+from selenium import webdriver
+from selenium.common.exceptions import StaleElementReferenceException
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
 
 
 class TestLoginSanity:
-    def find_and_interact(self, driver, wait, button_xpath, textarea_xpath=None, next_text=None):
+    def find_and_interact(self, driver: object, wait: object, button_xpath: object, textarea_xpath: object = None,
+                          next_text: object = None) -> object:
         """
         Helper method to find and click a button, and optionally interact with a textarea.
+        :type wait: object
+        :rtype:
         """
         button = wait.until( EC.element_to_be_clickable( (By.XPATH, button_xpath) ) )
         button.click()
 
         if textarea_xpath and next_text is not None:
             try:
-                textarea = wait.until( EC.element_to_be_clickable( (By.XPATH, textarea_xpath) ) )
+                textarea = wait.until( EC.element_to_be_clickable((By.XPATH, textarea_xpath) ) )
                 textarea.clear()
                 textarea.send_keys( next_text )
+
             except StaleElementReferenceException:
                 textarea = driver.find_element( By.XPATH, textarea_xpath )
                 textarea.clear()
@@ -54,19 +56,20 @@ class TestLoginSanity:
     @pytest.fixture()
     def setup(self):
         chrome_options = Options()
-        chrome_options.add_argument("--auto-open-devtools-for-tabs")  # This argument opens DevTools.
-        driver = webdriver.Chrome(options=chrome_options)
-        driver.get('https://synaps-stg-aab67ad5805a.herokuapp.com/Signin')
+        chrome_options.add_argument( "--auto-open-devtools-for-tabs" )
+        driver = webdriver.Chrome( options=chrome_options )
+        driver.get( 'https://synaps-stg-aab67ad5805a.herokuapp.com/Signin' )
         driver.maximize_window()
-        driver.implicitly_wait(10)
+        driver.implicitly_wait( 10 )
         yield driver
-      #driver.close()
+
+    # driver.close()
 
     def test_login_sanity_test(self, setup):
         driver = setup
 
         actions = ActionChains( driver )
-        wait = WebDriverWait( driver, 5 )
+        wait = WebDriverWait( driver, 10 )
         wait3 = WebDriverWait( driver, 3 )
         self.find_and_interact( driver, wait, '//*[@id="mobile-modal"]/div/div[2]/div[2]/div[1]/div/button' )
         driver.find_element( By.XPATH, '//*[@id="mobile-modal"]/div/div[2]/div[4]/div/input' ).send_keys(
@@ -79,7 +82,7 @@ class TestLoginSanity:
         # Click the login button
         self.find_and_interact( driver, wait, '//*[@id="mobile-modal"]/div/div[2]/div[7]/button' )
 
-        self.find_and_interact( driver, wait, '/html/body/div[3]/div/div/div[1]/button')
+        self.find_and_interact( driver, wait, '/html/body/div[3]/div/div/div[1]/button' )
 
         self.find_and_interact( driver, wait, '//*[@id="mobile-modal"]/div/div[2]/div[3]/div[2]/div[2]/div/button' )
         self.find_and_interact( driver, wait, '//*[@id="mobile-modal"]/div/div[2]/div[3]/div[2]/div[2]/p[1]' )
@@ -107,17 +110,13 @@ class TestLoginSanity:
 
             self.find_and_interact( driver, wait, "//*[contains(text(), 'הוסף רעיון')]" )
 
-
         # בחירת רעיון טוב
-        good_next_text = self.get_next_name + "good"()
-        self.find_and_interact( driver, wait, '' )
-        self.find_and_interact(
-            driver, wait,
-            '//*[@id="mobile-modal"]/div/div[2]/div[2]/div[2]',
-            '//*[@id="mobile-modal"]/div/div[2]/div[1]/div[2]/textarea', good_next_text )
+        good_next_text = self.get_next_name() + "good"
 
-
+        self.find_and_interact( driver, wait, '//*[@id="mobile-modal"]/div/div[2]/div[2]/div[2]',
+                                '//*[@id="mobile-modal"]/div/div[2]/div[1]/div[2]/textarea', good_next_text )
+        self.find_and_interact( driver, wait, '//*[@id="mobile-modal"]/div/div[2]/div[2]/div/div[2]/button' )
 
         time.sleep( 10 )
 
-        #driver.quit()
+        # driver.quit()
