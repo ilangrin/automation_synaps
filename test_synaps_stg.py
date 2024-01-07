@@ -112,13 +112,14 @@ class TestLoginSanity:
 
 
         # בחירת רעיון טוב
-
-        good_next_text = self.get_next_name() + "good"
-
-        self.find_and_interact(driver, wait, '//*[@id="mobile-modal"]/div/div[2]/div[2]/div[2]',
-                                '//*[@id="mobile-modal"]/div/div[2]/div[1]/div[2]/textarea',"test 32")
+        driver.find_element(By.XPATH,'//*[@id="mobile-modal"]/div/div[2]/div[2]/div[2]').click()
+        source_element = driver.find_element( By.XPATH, '//*[@id="mobile-modal"]/div/div[2]/p[2]' )
+        copied_text = source_element.text
+        target_text_area = driver.find_element( By.XPATH, '//*[@id="mobile-modal"]/div/div[2]/div[1]/div[2]/textarea' )
+        target_text_area.clear()
+        target_text_area.send_keys( copied_text )
         self.find_and_interact( driver, wait, '//*[@id="mobile-modal"]/div/div[2]/div[2]/div/div[2]/button' )
-
-        time.sleep( 10 )
+        self.find_and_interact( driver, wait, '//*[@id="mobile-modal"]/div/div[2]/div[3]/div[2]' )
+        time.sleep( 5 )
 
         driver.quit()
