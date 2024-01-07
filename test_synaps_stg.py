@@ -8,8 +8,8 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
-
-
+from selenium.common.exceptions import TimeoutException
+counter1, counter2, name_index = 1, 1, 0
 class TestLoginSanity:
     def find_and_interact(self, driver: object, wait: object, button_xpath: object, textarea_xpath: object = None,
                           next_text: object = None) -> object:
@@ -34,22 +34,20 @@ class TestLoginSanity:
 
     def get_next_name(self):
         global counter1, counter2, name_index
-        counter1, counter2, name_index = 1, 1, 0
         name_list = ["brain_write", "bad_idea", "melioration", "perspective", "hobbies", "biomimicry", "sit_minus",
                      "trends"]
-        # יצירת השם הבא
+
+        # Create the next name
         name = f"test_{name_list[name_index]}_{counter1}_{counter2}"
 
-        # עדכון המונים
+        # Update counters
         counter2 += 1
         if counter2 > 5:
             counter2 = 1
-            counter1 += 1
-            if counter1 > 5:
-                counter1 = 1
-                name_index += 1
-                if name_index >= len( name_list ):
-                    name_index = 0
+            name_index += 1
+            if name_index >= len( name_list ):
+                name_index = 0
+                counter1 += 1
 
         return name
 
@@ -63,7 +61,7 @@ class TestLoginSanity:
         driver.implicitly_wait( 10 )
         yield driver
 
-    # driver.close()
+        driver.close()
 
     def test_login_sanity_test(self, setup):
         driver = setup
@@ -72,51 +70,55 @@ class TestLoginSanity:
         wait = WebDriverWait( driver, 10 )
         wait3 = WebDriverWait( driver, 3 )
         self.find_and_interact( driver, wait, '//*[@id="mobile-modal"]/div/div[2]/div[2]/div[1]/div/button' )
-        driver.find_element( By.XPATH, '//*[@id="mobile-modal"]/div/div[2]/div[4]/div/input' ).send_keys(
-            "test08@synaps.co" )
+        driver.find_element( By.XPATH, '//*[@id="mobile-modal"]/div/div[2]/div[4]/div/input' ).send_keys("test11@synaps.co")
         driver.find_element( By.XPATH, '//*[@id="mobile-modal"]/div/div[2]/div[5]/div/input' ).send_keys( "123456" )
         self.find_and_interact( driver, wait, '//*[@id="default-checkbox"]' )
 
         # תחילת תהליך בדיקה
 
-        # Click the login button
+        # כפתור לוג אין
         self.find_and_interact( driver, wait, '//*[@id="mobile-modal"]/div/div[2]/div[7]/button' )
+        #   בחירת אווטר
+        try:
 
+            selection_page_element = wait.until(
+                EC.visibility_of_element_located( (By.XPATH, '//*[@id="mobile-modal"]/div/div[2]/div[2]/img[8]') ) )
+            selection_page_element.click()
+        except TimeoutException:
+
+            print( "avatar page not found, continuing with the script." )
+
+        # תנאי שימוש
         self.find_and_interact( driver, wait, '/html/body/div[3]/div/div/div[1]/button' )
-
-        self.find_and_interact( driver, wait, '//*[@id="mobile-modal"]/div/div[2]/div[3]/div[2]/div[2]/div/button' )
-        self.find_and_interact( driver, wait, '//*[@id="mobile-modal"]/div/div[2]/div[3]/div[2]/div[2]/p[1]' )
-        element = driver.find_element( By.XPATH, '//*[@id="mobile-modal"]/div/div[2]/div[3]/div[2]/div[2]/p[1]' )
-        driver.execute_script( "arguments[0].scrollIntoView(true);", element )
-
         # בחירת אתגר
+        self.find_and_interact( driver, wait, '//*[@id="mobile-modal"]/div/div[2]/div[3]/div[1]/div[2]/div/button' )
 
-        self.find_and_interact( driver, wait, '//*[@id="mobile-modal"]/div/div[2]/div[3]/div[2]/div[2]/div/button' )
         element_challenge_info = driver.find_element( By.ID, "challenge_info" )
         driver.execute_script( "arguments[0].click();", element_challenge_info )
         time.sleep( 4 )
         self.find_and_interact( driver, wait, '//*[@id="mobile-modal"]/div/div[2]/div[7]/div/div/button' )
         element_brainwrite = driver.find_element( By.ID, "brain_write" )
         driver.execute_script( "arguments[0].click();", element_brainwrite )
-        time.sleep( 4 )
+        self.find_and_interact( driver, wait, '//*[@id="mobile-modal"]/div/div[2]/div[4]/div/div/button' )
+
 
         for _ in range( 5 ):
             next_text = self.get_next_name()
-            self.find_and_interact(
-                driver, wait,
-                '//*[@id="mobile-modal"]/div/div[2]/div[4]/div/div/button',
-                '//*[@id="mobile-modal"]/div/div[2]/div[4]/textarea',
-                next_text )
+            driver.find_element(By.XPATH,'//*[@id="mobile-modal"]/div/div[2]/div[4]/textarea').send_keys(next_text)
+            driver.find_element(By.XPATH,'//*[@id="mobile-modal"]/div/div[2]/div[4]/div/div/button').click()
+            time.sleep( 2 )
+            #self.find_and_interact( driver, wait, '//*[@id="mobile-modal"]/div/div[2]/div[2]/div/div[2]/button')
 
-            self.find_and_interact( driver, wait, "//*[contains(text(), 'הוסף רעיון')]" )
+
 
         # בחירת רעיון טוב
+
         good_next_text = self.get_next_name() + "good"
 
-        self.find_and_interact( driver, wait, '//*[@id="mobile-modal"]/div/div[2]/div[2]/div[2]',
-                                '//*[@id="mobile-modal"]/div/div[2]/div[1]/div[2]/textarea', good_next_text )
+        self.find_and_interact(driver, wait, '//*[@id="mobile-modal"]/div/div[2]/div[2]/div[2]',
+                                '//*[@id="mobile-modal"]/div/div[2]/div[1]/div[2]/textarea',"test 32")
         self.find_and_interact( driver, wait, '//*[@id="mobile-modal"]/div/div[2]/div[2]/div/div[2]/button' )
 
         time.sleep( 10 )
 
-        # driver.quit()
+        driver.quit()
