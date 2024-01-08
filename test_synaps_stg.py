@@ -10,7 +10,10 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.common.exceptions import TimeoutException
 counter1, counter2, name_index = 1, 1, 0
+
 class TestLoginSanity:
+    counter = 0
+
     def find_and_interact(self, driver: object, wait: object, button_xpath: object, textarea_xpath: object = None,
                           next_text: object = None) -> object:
         """
@@ -51,6 +54,7 @@ class TestLoginSanity:
 
         return name
 
+
     @pytest.fixture()
     def setup(self):
         chrome_options = Options()
@@ -64,6 +68,7 @@ class TestLoginSanity:
         driver.close()
 
     def test_login_sanity_test(self, setup):
+        TestLoginSanity.counter += 1
         driver = setup
 
         actions = ActionChains( driver )
@@ -92,7 +97,6 @@ class TestLoginSanity:
         self.find_and_interact( driver, wait, '/html/body/div[3]/div/div/div[1]/button' )
         # בחירת אתגר
         self.find_and_interact( driver, wait, '//*[@id="mobile-modal"]/div/div[2]/div[3]/div[1]/div[2]/div/button' )
-
         element_challenge_info = driver.find_element( By.ID, "challenge_info" )
         driver.execute_script( "arguments[0].click();", element_challenge_info )
         time.sleep( 4 )
@@ -108,22 +112,26 @@ class TestLoginSanity:
             driver.find_element(By.XPATH,'//*[@id="mobile-modal"]/div/div[2]/div[4]/div/div/button').click()
             time.sleep( 1 )
 
-        def perform_actions(self, driver, wait):
+
             # בחירת רעיון טוב
-            driver.find_element( By.XPATH, '//*[@id="mobile-modal"]/div/div[2]/div[2]/div[2]' ).click()
-            source_element = driver.find_element( By.XPATH, '//*[@id="mobile-modal"]/div/div[2]/p[2]' )
-            copied_text = source_element.text
-            target_text_area = driver.find_element( By.XPATH,
-                                                    '//*[@id="mobile-modal"]/div/div[2]/div[1]/div[2]/textarea' )
-            target_text_area.clear()
-            # הוספת מספר ייחודי לטקסט
-            unique_name = get_unique_name()
-            target_text_area.send_keys( f"{copied_text}_{unique_name}" )
-            time.sleep( 1 )
+        driver.find_element( By.XPATH, '//*[@id="mobile-modal"]/div/div[2]/div[2]/div[3]' ).click()
+        source_element = driver.find_element( By.XPATH, '//*[@id="mobile-modal"]/div/div[2]/p[2]' )
+        copied_text = source_element.text
+        target_text_area = driver.find_element( By.XPATH, '//*[@id="mobile-modal"]/div/div[2]/div[1]/div[2]/textarea' )
+        target_text_area.clear()
+        target_text_area.send_keys( f"{copied_text}_{TestLoginSanity.counter}" )
+        time.sleep( 1 )
+            # אישור
+        self.find_and_interact(driver, wait, '//*[@id="mobile-modal"]/div/div[2]/div[2]/div/div[2]/button')
+        self.find_and_interact( driver, wait, '//*[@id="mobile-modal"]/div/div[2]/div[3]/div[2]' )
+            #פופאפ
 
-        self.find_and_interact( driver, wait, '/html/body/div[3]/div/div/div[2]/div/button' )
 
-        self.find_and_interact( driver, wait, '//*[@id="mobile-modal"]/div/div[2]/div[7]/div/div/button' )
+        modal = WebDriverWait( driver, 5 ).until(EC.visibility_of_element_located( (By.CLASS_NAME, "ReactModal__Overlay") ) )
+        button_inside_modal = modal.find_element( By.XPATH, '/html/body/div[3]/div/div/div[2]/div/button' )
+        button_inside_modal.click()
+
+
         element_bad_idea = driver.find_element( By.ID, "bad_idea" )
         driver.execute_script( "arguments[0].click();", element_bad_idea )
         self.find_and_interact( driver, wait, '//*[@id="mobile-modal"]/div/div[2]/div[4]/div/div/button' )
