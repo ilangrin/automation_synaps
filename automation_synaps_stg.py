@@ -16,7 +16,7 @@ class TestLoginSanity:
     @pytest.fixture()
     def setup(self):
         driver = webdriver.Chrome()
-        driver.get('https://synaps-dev.herokuapp.com/Signin')
+        driver.get('https://synaps-stg-aab67ad5805a.herokuapp.com/Signin')
         driver.maximize_window()
         driver.implicitly_wait(10)
         yield driver

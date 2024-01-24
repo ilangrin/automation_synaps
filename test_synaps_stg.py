@@ -11,10 +11,6 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.common.exceptions import TimeoutException
 counter1, counter2, name_index = 1, 1, 0
 
-
-
-
-
 class TestLoginSanity:
     counter = 0
     user_list = [("test01@synaps.co", "123456"), ("test02@synaps.co", "123456"), ("test03@synaps.co", "123456"),
@@ -358,6 +354,3 @@ class TestLoginSanity:
 
 
         driver.quit()
-
-
-
