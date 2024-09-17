@@ -66,11 +66,11 @@ class TestLoginSanity:
 
         for _ in range(5):
             driver.find_element(By.XPATH, '//*[@id="mobile-modal"]/div/div[2]/div[4]/div/div/button').click()
-            textarea = driver.find_element(By.XPATH, '//*[@id="mobile-modal"]/div/div[2]/div[4]/textarea')
+            textarea = driver.find_element(By.XPATH, '//*[@id="mobile-modal"]/div/div[2]/div[4]/div[3]/textarea')
             next_text = self.get_next_text()
             textarea.clear()
             textarea.send_keys(next_text)
-            link = wait.until(EC.element_to_be_clickable((By.XPATH, "//*[contains(text(), 'הוסף רעיון')]")))
+            link = wait.until(EC.element_to_be_clickable((By.XPATH, "//*[@id="mobile-modal"]/div/div[2]/div[4]/div[4]/div/button")))
             link.click()
 
     #def test_area_interaction(self, driver, wait):
