@@ -7,8 +7,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
-from state_manager import get_next_name
-
+from state_manager import get_next_user
 counter1, counter2, name_index = 1, 1, 0
 
 # Define user_list outside the class
@@ -16,12 +15,14 @@ user_list = [
     ("test01@synaps.co", "123456"), ("test02@synaps.co", "123456"), ("test03@synaps.co", "123456"),
     ("test04@synaps.co", "123456"), ("test05@synaps.co", "123456"), ("test06@synaps.co", "123456"),
     ("test07@synaps.co", "123456"), ("test08@synaps.co", "123456"), ("test09@synaps.co", "123456"),
-    ("test10@synaps.co", "123456")
+    ("test10@synaps.co", "123456"), ("test11@synaps.co", "123456"), ("test12@synaps.co", "123456"),
+    ("test13@synaps.co", "123456"), ("test14@synaps.co", "123456"), ("test15@synaps.co", "123456"),
+    ("test16@synaps.co", "123456"), ("test17@synaps.co", "123456"), ("test18@synaps.co", "123456"),
+    ("test19@synaps.co", "123456"), ("test20@synaps.co", "123456"), ("test21@synaps.co", "123456"),
 ]
 
 class TestLoginSanity:
     counter = 0
-
     def find_and_interact(self, driver: object, wait: object, button_xpath: object, textarea_xpath: object = None,
                           next_text: object = None) -> object:
         button = wait.until(EC.element_to_be_clickable((By.XPATH, button_xpath)))
@@ -37,18 +38,18 @@ class TestLoginSanity:
                 textarea.clear()
                 textarea.send_keys(next_text)
 
-    def get_next_name(self):
+    def get_next_name(self, username):
         global counter1, counter2, name_index
         name_list = ["brain_write", "bad_idea", "Combine", "perspective", "hobbies", "Bio Mimic", "Less is More",
                      "trends"]
 
-        name = f"test_{name_list[name_index]}_{counter1}_{counter2}"
+        name = f"test_{name_list[name_index]}_{counter1}_{counter2}({username.split('@')[0]})"
 
         counter2 += 1
-        if counter2 > 5:
+        if counter2 > 3:
             counter2 = 1
             name_index += 1
-            if name_index >= len(name_list):
+            if name_index >= len( name_list ):
                 name_index = 0
                 counter1 += 1
 
@@ -64,14 +65,14 @@ class TestLoginSanity:
         driver.implicitly_wait(12)
         yield driver
 
-    @pytest.mark.parametrize("username, password", user_list)
+    @pytest.mark.parametrize("username, password", [get_next_user(user_list)])
     def test_login_sanity_test(self, setup, username, password, element_melioration=None):
         driver = setup
 
         driver.maximize_window()
 
         actions = ActionChains(driver)
-        wait = WebDriverWait(driver, 10)
+        wait = WebDriverWait(driver, 20)
         self.find_and_interact( driver, wait, '//*[@id="mobile-modal"]/div/div[2]/div[2]/div[1]/div/button')
         driver.find_element( By.XPATH, '//*[@id="mobile-modal"]/div/div[2]/div[4]/div/input').send_keys(username)
         driver.find_element( By.XPATH, '//*[@id="mobile-modal"]/div/div[2]/div[5]/div/input').send_keys(password)
@@ -98,7 +99,7 @@ class TestLoginSanity:
 
 
         for _ in range( 3):
-            next_text = get_next_name()
+            next_text = self.get_next_name(username)
             time.sleep(2)
             driver.find_element(By.XPATH,"//*[@id=\"mobile-modal\"]/div/div[2]/div[4]/div[3]/textarea").send_keys(next_text)
             driver.find_element(By.XPATH,'//*[@id="mobile-modal"]/div/div[2]/div[4]/div/div/button').click()
@@ -135,7 +136,7 @@ class TestLoginSanity:
         self.find_and_interact( driver, wait, '//*[@id="mobile-modal"]/div/div[2]/div[4]/div/div/button')
 
         for _ in range(3):
-            next_text = get_next_name()
+            next_text = self.get_next_name(username)
             driver.find_element( By.XPATH, '//*[@id="mobile-modal"]/div/div[2]/div[4]/div[3]/textarea').send_keys(next_text)
             driver.find_element( By.XPATH, '//*[@id="mobile-modal"]/div/div[2]/div[4]/div[4]/div/button' ).click()
             time.sleep(2)
@@ -169,7 +170,7 @@ class TestLoginSanity:
         self.find_and_interact( driver, wait, '//*[@id="mobile-modal"]/div/div[2]/div[4]/div/div/button')
 
         for _ in range(3):
-            next_text = get_next_name()
+            next_text = self.get_next_name(username)
             driver.find_element(By.XPATH, '//*[@id="mobile-modal"]/div/div[2]/div[4]/div[3]/textarea').send_keys(next_text)
             driver.find_element(By.XPATH, '//*[@id="mobile-modal"]/div/div[2]/div[4]/div[4]/div/button').click()
             time.sleep(2)
@@ -202,7 +203,7 @@ class TestLoginSanity:
         self.find_and_interact(driver, wait, '//*[@id="mobile-modal"]/div/div[2]/div[4]/div/div/button')
 
         for _ in range(3):
-            next_text = get_next_name()
+            next_text = self.get_next_name(username)
             driver.find_element( By.XPATH, '//*[@id="mobile-modal"]/div/div[2]/div[4]/div[3]/textarea').send_keys(next_text)
             driver.find_element( By.XPATH, '//*[@id="mobile-modal"]/div/div[2]/div[4]/div[4]/div/button').click()
             time.sleep(2)
@@ -231,7 +232,7 @@ class TestLoginSanity:
         self.find_and_interact(driver, wait, '//*[@id="mobile-modal"]/div/div[2]/div[4]/div/div/button')
 
         for _ in range(3):
-            next_text = get_next_name()
+            next_text = self.get_next_name(username)
             driver.find_element(By.XPATH, '//*[@id="mobile-modal"]/div/div[2]/div[4]/div[3]/textarea').send_keys( next_text )
             driver.find_element(By.XPATH, '//*[@id="mobile-modal"]/div/div[2]/div[4]/div[4]/div/button').click()
             time.sleep(2)
@@ -256,11 +257,11 @@ class TestLoginSanity:
         #שלב 6
         element_biomimicry = driver.find_element( By.ID, "biomimicry")
         driver.execute_script("arguments[0].click();", element_biomimicry)
-        time.sleep(2)
-        self.find_and_interact(driver, wait, '//*[@id="mobile-modal"]/div/div[2]/div[4]/div/div/button')
+        time.sleep(5)
+        driver.find_element( By.ID, '//*[@id="biomimicry"]').click()
 
         for _ in range(3):
-            next_text = get_next_name()
+            next_text = self.get_next_name(username)
             driver.find_element( By.XPATH, '//*[@id="mobile-modal"]/div/div[2]/div[4]/div[3]/textarea').send_keys( next_text )
             driver.find_element( By.XPATH, '//*[@id="mobile-modal"]/div/div[2]/div[4]/div/div/button').click()
             time.sleep(2)
@@ -329,7 +330,7 @@ class TestLoginSanity:
         self.find_and_interact( driver, wait, '//*[@id="mobile-modal"]/div/div[2]/div[4]/div/div/button')
 
         for _ in range(5):
-            next_text = get_next_name()
+            next_text = self.get_next_name(username)
             driver.find_element( By.XPATH, '//*[@id="mobile-modal"]/div/div[2]/div[4]/div[3]/textarea').send_keys( next_text )
             driver.find_element( By.XPATH, '//*[@id="mobile-modal"]/div/div[2]/div[4]/div/div/button').click()
             time.sleep(1)
